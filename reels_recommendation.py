@@ -4,7 +4,7 @@ from collections import defaultdict, Counter
 
 class ReelRecommendationSystem:
     def __init__(self, users_file, reels_file):
-        """Initialize the recommendation system with data files."""
+        
         self.users_df = pd.read_csv(users_file)
         self.reels_df = pd.read_csv(reels_file)
         
@@ -20,7 +20,7 @@ class ReelRecommendationSystem:
         self._build_data_structures()
     
     def _build_data_structures(self):
-        """Build the necessary data structures from the dataframes."""
+       
         # Process reels data
         for _, row in self.reels_df.iterrows():
             reel_id = row['reel_id']
@@ -55,7 +55,7 @@ class ReelRecommendationSystem:
             self.user_viewed_reels[user_id] = set(viewed)
     
     def _find_second_degree_connections(self, user_id):
-        """Find users who are followed by users that the given user follows (2nd degree connections)."""
+        
         second_degree_connections = set()
         for followed_user in self.user_follows[user_id]:
             if followed_user in self.user_follows:
@@ -68,13 +68,7 @@ class ReelRecommendationSystem:
         return second_degree_connections
     
     def recommend_reels(self, user_id, n=10):
-        """
-        Recommend reels for a given user using a combination of:
-        1. Collaborative filtering based on similar users
-        2. Content-based filtering based on tags
-        3. Graph-based recommendations using 2nd degree connections
-        4. Popularity metrics
-        """
+        
         if user_id not in self.user_liked_reels:
             return "User not found"
         
@@ -92,7 +86,7 @@ class ReelRecommendationSystem:
         for followed_user in self.user_follows[user_id]:
             for reel in self.user_created_reels[followed_user]:
                 if reel not in interacted_reels:
-                    candidate_scores[reel] += 3.0  # Boost reels from followed users
+                    candidate_scores[reel] += 3.0 
         
         # 2. Content-based filtering: Find reels with similar tags to liked reels
         user_tag_preferences = Counter()
@@ -113,7 +107,7 @@ class ReelRecommendationSystem:
         for connection in second_degree_connections:
             for reel in self.user_created_reels[connection]:
                 if reel not in interacted_reels:
-                    candidate_scores[reel] += 1.5  # Lower boost than direct connections but still significant
+                    candidate_scores[reel] += 1.5  
         
         # 4. Add popularity boost - fixed to properly iterate through the dataframe
         for _, row in self.reels_df.iterrows():
@@ -130,7 +124,7 @@ class ReelRecommendationSystem:
         return [reel_id for reel_id, score in top_reels]
     
     def get_reel_details(self, reel_id):
-        """Get details for a specific reel."""
+        
         if reel_id in self.reel_tags:
             reel_data = self.reels_df[self.reels_df['reel_id'] == reel_id].iloc[0]
             return {
@@ -143,7 +137,7 @@ class ReelRecommendationSystem:
         return None
     
     def explain_recommendation(self, user_id, reel_id):
-        """Explain why a reel was recommended to a user."""
+        
         if user_id not in self.user_liked_reels or reel_id not in self.reel_tags:
             return "User or reel not found"
         

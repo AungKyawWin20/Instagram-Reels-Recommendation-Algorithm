@@ -2,7 +2,6 @@ import pandas as pd
 from reels_recommendation import ReelRecommendationSystem
 
 def visualize_tag_distribution(recommender, user_id):
-    """Visualize the distribution of tags in a user's liked reels."""
     user_tag_counts = {}
     
     # Count tags in user's liked reels

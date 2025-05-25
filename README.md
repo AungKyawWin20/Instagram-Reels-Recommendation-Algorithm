@@ -1,99 +1,168 @@
-# Instagram Reels Recommendation Algorithm
+# Instagram Reels Recommendation System
 
-A simple, clean, and easy-to-understand recommendation system for Instagram Reels that utilizes graphs and hashmaps to make personalized content recommendations.
+A recommendation system that suggests personalized Instagram Reels using graph algorithms and efficient data structures. The system combines social network analysis, content-based filtering, and engagement metrics to provide relevant recommendations.
 
-## Overview
+## Project Description
 
-This project implements a recommendation algorithm that suggests Instagram Reels to users based on their preferences, social connections, and content engagement patterns. The algorithm combines multiple recommendation strategies:
+This project implements a recommendation algorithm for Instagram Reels with the following key features:
 
-1. **Graph-based Recommendations**: Uses social connections (following relationships) to recommend content
-2. **Collaborative Filtering**: Recommends content based on similar users' preferences
-3. **Content-based Filtering**: Recommends content with similar tags/features to what the user has liked
-4. **Popularity Metrics**: Factors in overall engagement (likes and views) as a signal
+1. **Multiple Recommendation Strategies**:
 
-## Features
+   - Graph-based recommendations using social connections
+   - Content-based filtering using reel tags
+   - Collaborative filtering based on user interactions
+   - Popularity-based boosting using engagement metrics
 
-- **Social Graph Analysis**: Finds first and second-degree connections in the user's social network
-- **Tag-based Matching**: Recommends content with tags similar to the user's liked content
-- **Recommendation Explanations**: Provides clear explanations for why content was recommended
-- **Visualization Tools**: Includes tools to visualize user preferences, recommendation sources, and social networks
+2. **Visualization Tools**:
 
-## Files
+   - Tag distribution analysis
+   - Social network visualization
+   - Recommendation explanation system
 
-- `reels_recommendation.py`: Core recommendation algorithm implementation
-- `demo_recommendation.py`: Interactive demo with visualizations
-- `Datasets/`: Contains sample data files
-  - `simulated_users.csv`: User data including follows, likes, and view history
-  - `simulated_reels.csv`: Reel data including tags, creator, and engagement metrics
+3. **Interactive Interfaces**:
+   - Command-line demo interface
+   - Streamlit web application
+   - Detailed recommendation explanations
 
-## Usage
+## Data Structures Used
 
-### Basic Usage
+The system uses several efficient data structures for quick lookups and recommendations:
 
 ```python
-from reels_recommendation import ReelRecommendationSystem
-
-# Initialize the recommendation system
-recommender = ReelRecommendationSystem('Datasets/simulated_users.csv', 'Datasets/simulated_reels.csv')
-
-# Get recommendations for a user
-user_id = "user_10"
-recommendations = recommender.recommend_reels(user_id, n=5)
-
-# Display recommendations
-for reel_id in recommendations:
-    details = recommender.get_reel_details(reel_id)
-    print(f"{reel_id} by {details['creator_id']} - Tags: {details['tags']}")
-    print(recommender.explain_recommendation(user_id, reel_id))
+# Core Data Structures
+user_liked_reels = {}      # HashMap: user_id -> Set(liked_reel_ids)
+user_viewed_reels = {}     # HashMap: user_id -> Set(viewed_reel_ids)
+user_follows = {}          # HashMap: user_id -> Set(followed_user_ids)
+reel_tags = {}            # HashMap: reel_id -> List(tags)
+tag_reels = defaultdict(set)  # HashMap: tag -> Set(reel_ids)
+user_created_reels = defaultdict(set)  # HashMap: user_id -> Set(created_reel_ids)
 ```
 
-### Running the Demo
+## Setup and Installation
 
-To run the interactive demo with visualizations:
+1. Clone the repository:
 
+```bash
+git clone https://github.com/AungKyawWin20/Instagram-Reels-Recommendation-Algorithm.git
+cd Instagram-Reels-Recommendation-Algorithm
 ```
+
+2. Install required packages:
+
+```bash
+pip install -r requirements.txt
+```
+
+## Running the Code
+
+### 1. Command Line Demo
+
+```bash
 python demo_recommendation.py
 ```
 
-The demo will:
+### 2. Web Interface
 
-1. Prompt you to enter a user ID
-2. Display user information and top tags in liked content
-3. Show personalized recommendations and explanations
-4. Generate visualizations of tag distributions, recommendation sources, and social connections
+```bash
+streamlit run app.py
+```
 
-## Requirements
+## Sample Usage and Output
 
-- Python 3.6+
-- pandas
-- matplotlib
-- seaborn
-- networkx (optional, for social graph visualization)
+### Command Line Interface
 
-## Algorithm Details
+```python
+# Input
+Enter a user_id to analyze (or 'q' to quit): user_10
 
-The recommendation algorithm uses several data structures for efficient lookups:
+# Output
+User: user_10
+Number of followed users: 8
+Number of liked reels: 11
+Number of viewed reels: 16
 
-- **User Liked Reels HashMap**: Maps each user to their liked reels
-- **User Viewed Reels HashMap**: Maps each user to their viewed reels
-- **User Follows HashMap**: Maps each user to the users they follow
-- **Reel Tags HashMap**: Maps each reel to its tags
-- **Tag Reels HashMap**: Maps each tag to reels that include it
-- **User Created Reels HashMap**: Maps each user to reels they created
+Top tags in liked reels:
+- cooking: 3
+- travel: 2
+- anime: 2
+- food: 2
+- coding: 1
 
-The recommendation process:
+Top 5 Recommendations:
+1. reel_145 by user_28 - Tags: ['memes']
+   Recommended because: user_28 is followed by someone you follow; Popular content with 790 likes and 3050 views
 
-1. Identifies reels from followed users (direct connections)
-2. Finds reels from users followed by followed users (2nd-degree connections)
-3. Analyzes tag preferences based on liked content
-4. Recommends reels with matching tags
-5. Applies popularity adjustments based on engagement metrics
-6. Ranks and returns top recommendations
+2. reel_187 by user_66 - Tags: ['asian cuties', 'memes', 'travel']
+   Recommended because: Contains tags you like: travel; Popular content with 396 likes and 4624 views
+```
 
-## Extension Ideas
+### Web Interface
 
-- Add time-decay factors to give higher weight to recent engagements
-- Implement negative feedback processing (skipped or reported content)
-- Add content embedding models for deeper semantic matching
-- Incorporate real-time engagement signals
-- Add diversity mechanisms to avoid filter bubbles
+The Streamlit web interface provides:
+
+- Interactive user selection
+- Visual tag distribution analysis
+- Detailed recommendations with explanations
+- Sample video previews for top tags
+
+## Data Structure Details
+
+### 1. Graph Representation
+
+- Uses adjacency lists through hashmaps for efficient social connection lookups
+- Supports quick traversal for finding 2nd-degree connections
+- Time Complexity: O(1) for direct connection lookups
+
+### 2. Recommendation Scoring
+
+```python
+candidate_scores = defaultdict(float)
+# Scoring weights:
+# - Direct connections: 3.0
+# - Second-degree connections: 1.5
+# - Tag matches: 2.0 * (tag_frequency/total_likes)
+# - Popularity: 0.0001 * (likes + 0.1 * views)
+```
+
+### 3. Data Processing Pipeline
+
+1. Load and parse CSV data
+2. Build efficient lookup structures
+3. Process user interactions and social connections
+4. Generate and rank recommendations
+
+## Project Structure
+
+```
+├── Datasets/
+│   ├── simulated_reels.csv
+│   └── simulated_users.csv
+├── app.py                 # Streamlit web interface
+├── demo_recommendation.py # Command-line demo
+├── reels_recommendation.py # Core algorithm
+└── requirements.txt
+```
+
+## Sample Data Format
+
+### simulated_users.csv
+
+```csv
+user_id,followed_users,liked_reels,view_history
+user_0,"user_15,user_4","reel_258,reel_13","reel_142,reel_79"
+```
+
+### simulated_reels.csv
+
+```csv
+reel_id,creator_id,tags,audio_id,like_count,view_count,timestamp
+reel_0,user_96,"travel,anime,memes",audio_11,456,2424,2025-04-15
+```
+
+## Future Improvements
+
+- Add time-decay for engagement metrics
+- Implement negative feedback processing
+- Add content embedding models
+- Add real-time recommendation updates
+- Implement diversity mechanisms

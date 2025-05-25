@@ -44,7 +44,7 @@ if user_id:
     # Tag Distribution
     st.header("Tag Preferences")
     tag_series = visualize_tag_distribution(recommender, user_id)
-    # ...existing code...
+    
     if not tag_series.empty:
         fig = px.bar(
             tag_series.head(10),
@@ -83,7 +83,7 @@ if user_id:
 
     # Recommendations
     st.header("Recommended Reels")
-    num_recommendations = st.slider("Number of recommendations", 5, 20, 10)
+    num_recommendations = st.slider("Number of recommendations", 5, 20, 5)
     recommendations = recommender.recommend_reels(user_id, n=num_recommendations)
 
     for i, reel_id in enumerate(recommendations, 1):
