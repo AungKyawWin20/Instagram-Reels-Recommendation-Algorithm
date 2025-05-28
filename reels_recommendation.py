@@ -9,12 +9,12 @@ class ReelRecommendationSystem:
         self.reels_df = pd.read_csv(reels_file)
         
         # Hashmaps for efficient lookups
-        self.user_liked_reels = {}  # User -> Set of liked reels
-        self.user_viewed_reels = {}  # User -> Set of viewed reels
-        self.user_follows = {}      # User -> Set of followed users
-        self.reel_tags = {}         # Reel -> List of tags
-        self.tag_reels = defaultdict(set)  # Tag -> Set of reels with that tag
-        self.user_created_reels = defaultdict(set)  # User -> Set of reels created by user
+        self.user_liked_reels = {}  
+        self.user_viewed_reels = {}  
+        self.user_follows = {}     
+        self.reel_tags = {}         
+        self.tag_reels = defaultdict(set)  
+        self.user_created_reels = defaultdict(set)  
         
         # Build the graph and hashmaps
         self._build_data_structures()
@@ -82,13 +82,13 @@ class ReelRecommendationSystem:
         # Recommendation candidates with scores
         candidate_scores = defaultdict(float)
         
-        # 1. Collaborative filtering: Find reels from followed users
+        # Collaborative filtering: Find reels from followed users
         for followed_user in self.user_follows[user_id]:
             for reel in self.user_created_reels[followed_user]:
                 if reel not in interacted_reels:
                     candidate_scores[reel] += 3.0 
         
-        # 2. Content-based filtering: Find reels with similar tags to liked reels
+        # Content-based filtering: Find reels with similar tags to liked reels
         user_tag_preferences = Counter()
         for liked_reel in liked_reels:
             if liked_reel in self.reel_tags:
@@ -102,14 +102,14 @@ class ReelRecommendationSystem:
                 if reel not in interacted_reels:
                     candidate_scores[reel] += tag_weight * 2.0
         
-        # 3. Graph-based recommendations: Find reels from 2nd-degree connections
+        # Graph-based recommendations: Find reels from 2nd-degree connections
         second_degree_connections = self._find_second_degree_connections(user_id)
         for connection in second_degree_connections:
             for reel in self.user_created_reels[connection]:
                 if reel not in interacted_reels:
                     candidate_scores[reel] += 1.5  
         
-        # 4. Add popularity boost - fixed to properly iterate through the dataframe
+        # Add popularity boost - fixed to properly iterate through the dataframe
         for _, row in self.reels_df.iterrows():
             reel = row['reel_id']
             if reel not in interacted_reels:
